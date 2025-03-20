@@ -188,7 +188,6 @@ client.on('messageCreate', async (message) => {
     }
 });
 
-// ฟังก์ชันให้บอทพูดด้วยเสียง TTS
 async function speak(connection, text) {
     const url = googleTTS.getAudioUrl(text, {
         lang: 'th',
@@ -226,8 +225,8 @@ async function transcribeAudio(filePath) {
 async function mergeAudioFiles(inputFiles, outputFile) {
     return new Promise((resolve, reject) => {
         ffmpeg()
-            .input(inputFiles[0]) // ใช้ไฟล์ WAV ที่บันทึก
-            .audioCodec('pcm_s16le') // ตั้งค่า codec ของเสียง
+            .input(inputFiles[0]) 
+            .audioCodec('pcm_s16le') 
             .on('end', () => {
                 console.log('✅ รวมไฟล์เสียงเสร็จสิ้น');
                 resolve();
@@ -240,17 +239,16 @@ async function mergeAudioFiles(inputFiles, outputFile) {
     });
 }
 
-// ฟังก์ชันอัปโหลดไฟล์ไปยัง Google Drive
 async function uploadToGoogleDrive(filePath) {
     const auth = new google.auth.GoogleAuth({
-        keyFile: 'key.json', // เส้นทางไปยังไฟล์คีย์บริการ
+        keyFile: 'key.json', 
         scopes: ['https://www.googleapis.com/auth/drive.file'],
     });
 
     const drive = google.drive({ version: 'v3', auth });
 
     const fileMetadata = {
-        name: `audio_${Date.now()}.wav`, // ชื่อไฟล์ที่จะแสดงใน Google Drive
+        name: `audio_${Date.now()}.wav`, 
         mimeType: 'audio/wav',
     };
 
@@ -260,7 +258,6 @@ async function uploadToGoogleDrive(filePath) {
     };
 
     try {
-        // อัปโหลดไฟล์ไปยัง Google Drive
         const response = await drive.files.create({
             resource: fileMetadata,
             media: media,
@@ -269,7 +266,6 @@ async function uploadToGoogleDrive(filePath) {
 
         const fileId = response.data.id;
 
-        // เปลี่ยนการตั้งค่าการเข้าถึงไฟล์ให้เป็นสาธารณะ
         await drive.permissions.create({
             fileId: fileId,
             resource: {
